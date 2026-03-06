@@ -187,12 +187,14 @@ private generateSponge(level: number, x: number, y: number, z: number, size: num
   /**
    * Returns the model matrix of the sponge
    */
-  public uMatrix(): Mat4 {
+ public uMatrix(): Mat4 {
+  const ret: Mat4 = new Mat4().setIdentity();
+  const time = performance.now() * 0.001;
 
-    // TODO: change this, if it's useful
-    const ret : Mat4 = new Mat4().setIdentity();
+  ret.scale(new Vec3([0.9, 0.9, 0.9]));
+  ret.rotate(time, new Vec3([0, 1, 0]));
 
-    return ret;
-  }
+  return ret;
+}
   
 }

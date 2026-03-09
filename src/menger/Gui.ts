@@ -140,9 +140,21 @@ export class GUI implements IGUI {
 
     //now handle whether the drag was with a left click or right click
     if (mouse.buttons == 1){ 
-      this.camera.rotate(Vec3.up, -GUI.rotationSpeed * dx);
-      this.camera.rotate(this.camera.right(), -GUI.rotationSpeed * dy)
 
+      //check if mouse actually moved so no math errors occur
+      if (dx == 0 && dy == 0) return;
+
+      //scale dy and dx with screen
+      const r = this.camera.right().scale(-dx);
+      const u = this.camera.up().scale(dy);
+      const mouseDir = r.add(u);
+
+
+      //get a perpendicular axis to determine camera look direction
+      const axis = Vec3.cross(this.camera.forward(), mouseDir).normalize();
+
+      //rotate the camera
+      this.camera.rotate(axis, GUI.rotationSpeed)
     } else if (mouse.buttons == 2){
       this.camera.offsetDist(GUI.zoomSpeed * dy);
     }

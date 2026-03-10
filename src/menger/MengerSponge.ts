@@ -116,9 +116,9 @@ private generateSponge(level: number, x: number, y: number, z: number, size: num
       // Back face (-z)
       [maxX, minY, minZ], [minX, minY, minZ], [minX, maxY, minZ], [maxX, maxY, minZ],
       // Left face (-x)
-      [minX, minY, maxZ], [minX, minY, minZ], [minX, maxY, minZ], [minX, maxY, maxZ],
+      [minX, minY, minZ], [minX, minY, maxZ], [minX, maxY, maxZ], [minX, maxY, minZ],
       // Right face (+x)
-      [maxX, minY, minZ], [maxX, minY, maxZ], [maxX, maxY, maxZ], [maxX, maxY, minZ],
+      [maxX, minY, maxZ], [maxX, minY, minZ], [maxX, maxY, minZ], [maxX, maxY, maxZ],
       // Top face (+y)
       [minX, maxY, maxZ], [maxX, maxY, maxZ], [maxX, maxY, minZ], [minX, maxY, minZ],
       // Bottom face (-y)
@@ -189,10 +189,11 @@ private generateSponge(level: number, x: number, y: number, z: number, size: num
    */
  public uMatrix(): Mat4 {
   const ret: Mat4 = new Mat4().setIdentity();
-  const time = performance.now() * 0.001;
-
   ret.scale(new Vec3([0.9, 0.9, 0.9]));
-  ret.rotate(time, new Vec3([0, 1, 0]));
+
+  // ROTATION IF NEEDED, COMMENTED OUT TO TEST OUT CMAERA CONTROLS
+  //const time = performance.now() * 0.001;
+  //ret.rotate(time, new Vec3([0, 1, 0]));
 
   return ret;
 }

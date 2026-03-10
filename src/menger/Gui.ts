@@ -25,9 +25,9 @@ export class GUI implements IGUI {
   private static readonly rollSpeed: number = 0.1;
   private static readonly panSpeed: number = 0.1;
 
-  private camera: Camera;
-  private dragging: boolean;
-  private fps: boolean;
+  private camera!: Camera; //silenced bc initialized/used in reset
+  private dragging!: boolean; //silenced bc initialized/used in reset
+  private fps!: boolean; //silenced bc initialized/used in reset
   private prevX: number;
   private prevY: number;
 
@@ -125,10 +125,39 @@ export class GUI implements IGUI {
    * before dragEnd.
    * @param mouse
    */
-  public drag(mouse: MouseEvent): void {
-	  
-	  // TODO: Your code here for left and right mouse drag
-	  
+  public drag(mouse: MouseEvent): void { 
+
+    //check if dragging is truly happening
+    if (!this.dragging)return;
+
+    //calculate how far the user dragged their mouse 
+    const dx = mouse.screenX - this.prevX;
+    const dy = mouse.screenY - this.prevY;
+
+    //and update the prevX and prevY values so that the next drag knows where the mouse was
+    this.prevX = mouse.screenX;
+    this.prevY = mouse.screenY;
+
+    //now handle whether the drag was with a left click or right click
+    if (mouse.buttons == 1){ 
+
+      //check if mouse actually moved so no math errors occur
+      if (dx == 0 && dy == 0) return;
+
+      //scale dy and dx with screen
+      const r = this.camera.right().scale(-dx);
+      const u = this.camera.up().scale(dy);
+      const mouseDir = r.add(u);
+
+
+      //get a perpendicular axis to determine camera look direction
+      const axis = Vec3.cross(this.camera.forward(), mouseDir).normalize();
+
+      //rotate the camera
+      this.camera.rotate(axis, GUI.rotationSpeed)
+    } else if (mouse.buttons == 2){
+      this.camera.offsetDist(GUI.zoomSpeed * dy);
+    }
   }
 
   /**
@@ -208,55 +237,55 @@ export class GUI implements IGUI {
 
     switch (key.code) {
       case "KeyW": {
-
+        this.camera.offset(this.camera.forward(), -GUI.zoomSpeed, true)
         break;
       }
       case "KeyA": {
-
+        this.camera.offset(this.camera.right(), -GUI.zoomSpeed, true)
         break;
       }
       case "KeyS": {
-
+        this.camera.offset(this.camera.forward(), GUI.zoomSpeed, true)
         break;
       }
       case "KeyD": {
-
+        this.camera.offset(this.camera.right(), GUI.zoomSpeed, true)
         break;
       }
       case "KeyR": {
-
+        this.reset();
         break;
       }
       case "ArrowLeft": {
-
+        this.camera.roll(GUI.rollSpeed)
         break;
       }
       case "ArrowRight": {
-
+        this.camera.roll(-GUI.rollSpeed)
         break;
       }
       case "ArrowUp": {
-
+        this.camera.offset(this.camera.up(), GUI.panSpeed, true)
         break;
       }
       case "ArrowDown": {
-
+        this.camera.offset(this.camera.up(), -GUI.panSpeed, true)
         break;
       }
       case "Digit1": {
-
+        this.sponge.setLevel(1)
         break;
       }
       case "Digit2": {
-
+        this.sponge.setLevel(2)
         break;
       }
       case "Digit3": {
-
+        this.sponge.setLevel(3)
         break;
       }
       case "Digit4": {
-
+        this.sponge.setLevel(4)
         break;
       }
       default: {

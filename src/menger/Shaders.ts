@@ -64,4 +64,3 @@ export let defaultFSText = `
 
 export let floorVSText = ``;
 export let floorFSText = ``;
-

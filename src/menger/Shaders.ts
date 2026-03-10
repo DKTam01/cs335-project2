@@ -60,6 +60,60 @@ export let defaultFSText = `
 `;
 
 // TODO: floor shaders
+export let floorVSText = `
+    precision mediump float;
 
-export let floorVSText = ``;
-export let floorFSText = ``;
+    attribute vec3 vertPosition;
+    attribute vec4 aNorm;
+    
+    varying vec4 lightDir;
+    varying vec4 normal;
+    varying vec4 worldPos;
+
+    uniform vec4 lightPosition;
+    uniform mat4 mWorld;
+    uniform mat4 mView;
+    uniform mat4 mProj;
+
+    void main () {
+        worldPos = mWorld * vec4(vertPosition, 1.0);
+        gl_Position = mProj * mView * worldPos;
+        
+        // Pass attributes for fragment shading
+        lightDir = lightPosition - worldPos;
+        normal = aNorm;
+    }
+`;
+
+export let floorFSText = `
+    precision mediump float;
+
+    varying vec4 lightDir;
+    varying vec4 normal;
+    varying vec4 worldPos;
+
+    void main () {
+        // start setting up checkerboard pattern
+        float checkSize = 5.0;
+        float x = floor(worldPos.x / checkSize);
+        float z = floor(worldPos.z / checkSize);
+        
+        // check if num is even or odd
+        float check = mod(x + z, 2.0);
+        
+        vec3 color;
+        if (check < 1.0) {
+            color = vec3(1.0, 1.0, 1.0); // White
+        } else {
+            color = vec3(0.0, 0.0, 0.0); // Black
+        }
+
+        // make sure floor isn't "flat"
+        vec3 N = normalize(normal.xyz);
+        vec3 L = normalize(lightDir.xyz);
+        float diffuse = max(dot(N, L), 0.0);
+        
+        // ambient lighting
+        gl_FragColor = vec4(color * (diffuse + 0.2), 1.0);
+    }
+`;
